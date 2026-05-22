@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Agent Reliability — Validation Survey</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f0f2f5; color: #222; line-height: 1.65; }
+.wrap { max-width: 760px; margin: 0 auto; padding: 24px 16px 80px; }
+
+.site-header { background: #1a1a2e; color: #fff; padding: 28px 32px; border-radius: 12px 12px 0 0; }
+.site-header h1 { font-size: 1.45rem; font-weight: 700; letter-spacing: -0.01em; }
+.site-header .sub { font-size: 0.88rem; color: #8899bb; margin-top: 5px; }
+
+.cover { background: #fff; border: 1px solid #e0e6ed; border-top: none; border-radius: 0 0 12px 12px; padding: 28px 32px; margin-bottom: 24px; }
+.cover .label { font-size: 0.72rem; font-weight: 700; color: #999; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 14px; }
+.cover p { margin-bottom: 12px; font-size: 0.93rem; color: #444; }
+.callout { background: #eef3fa; border-left: 4px solid #0f3d5f; padding: 13px 18px; border-radius: 0 6px 6px 0; margin: 16px 0; font-style: italic; color: #16213e; font-size: 0.93rem; }
+.cover hr { border: none; border-top: 1px solid #e8ecf0; margin: 18px 0; }
+.fine-print { font-size: 0.82rem; color: #888; font-style: italic; }
+
+.persona-picker { background: #fff; border: 1px solid #e0e6ed; border-radius: 12px; padding: 28px 32px; margin-bottom: 20px; }
+.persona-picker h2 { font-size: 1.05rem; color: #1a1a2e; margin-bottom: 6px; }
+.picker-desc { font-size: 0.88rem; color: #777; margin-bottom: 20px; }
+.persona-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 520px) { .persona-cards { grid-template-columns: 1fr; } }
+
+.persona-card { display: flex; align-items: flex-start; gap: 12px; padding: 15px 16px; border: 2px solid #e0e6ed; border-radius: 9px; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+.persona-card:hover { border-color: #0f3d5f; background: #f7fafd; }
+.persona-card.active { border-color: #0f3d5f; background: #eef3fa; }
+.persona-card input[type="radio"] { margin-top: 3px; accent-color: #0f3d5f; flex-shrink: 0; width: 16px; height: 16px; }
+.card-title { font-weight: 600; color: #1a1a2e; font-size: 0.93rem; }
+.card-desc { font-size: 0.8rem; color: #777; margin-top: 2px; line-height: 1.4; }
+
+.persona-sec { background: #fff; border: 1px solid #e0e6ed; border-radius: 12px; padding: 28px 32px; margin-bottom: 20px; }
+
+.sec-hdr { font-size: 0.8rem; font-weight: 700; color: #fff; background: #16213e; padding: 7px 14px; border-radius: 6px; margin: 28px 0 18px; text-transform: uppercase; letter-spacing: 0.07em; display: inline-block; }
+
+.question { margin-bottom: 24px; padding-bottom: 22px; border-bottom: 1px solid #f0f2f5; }
+.question:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.ql { font-weight: 600; color: #0f3d5f; font-size: 0.93rem; margin-bottom: 8px; line-height: 1.5; }
+.q-sub { font-size: 0.83rem; color: #888; font-style: italic; margin-bottom: 10px; margin-top: -4px; }
+
+.opts { display: flex; flex-direction: column; gap: 6px; }
+.opt { display: flex; align-items: center; gap: 9px; font-size: 0.9rem; cursor: pointer; padding: 7px 10px; border-radius: 6px; transition: background 0.1s; }
+.opt:hover { background: #f4f6f9; }
+.opt input[type="checkbox"], .opt input[type="radio"] { accent-color: #0f3d5f; flex-shrink: 0; width: 15px; height: 15px; }
+.opt span { color: #333; }
+.other-row { align-items: center; gap: 8px; }
+.other-text { border: 1px solid #ccd4de; border-radius: 5px; padding: 4px 9px; font-size: 0.88rem; font-family: inherit; margin-left: 2px; width: 200px; }
+.other-text:focus { outline: none; border-color: #0f3d5f; }
+
+.likert-wrap { overflow-x: auto; margin-top: 8px; }
+.likert { border-collapse: collapse; min-width: 380px; width: 100%; }
+.likert th { background: #e8eff7; padding: 9px 6px; text-align: center; font-size: 0.8rem; border: 1px solid #ccd4de; font-weight: 600; min-width: 64px; line-height: 1.4; }
+.likert td { border: 1px solid #ccd4de; text-align: center; padding: 11px 6px; }
+.likert input[type="radio"] { accent-color: #0f3d5f; width: 17px; height: 17px; cursor: pointer; }
+
+textarea { width: 100%; border: 1px solid #ccd4de; border-radius: 7px; padding: 10px 13px; font-size: 0.91rem; font-family: inherit; resize: vertical; color: #222; background: #fafbfc; transition: border-color 0.15s; }
+textarea:focus { outline: none; border-color: #0f3d5f; background: #fff; box-shadow: 0 0 0 3px rgba(15,61,95,0.08); }
+
+.submit-bar { padding: 8px 0 16px; text-align: center; }
+.btn-submit { background: #0f3d5f; color: #fff; border: none; padding: 14px 44px; font-size: 1rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: background 0.15s; letter-spacing: 0.01em; }
+.btn-submit:hover { background: #16213e; }
+.btn-submit:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.thankyou { background: #fff; border: 1px solid #e0e6ed; border-radius: 12px; padding: 56px 32px; text-align: center; }
+.thankyou .check { font-size: 3.2rem; margin-bottom: 16px; }
+.thankyou h2 { font-size: 1.6rem; color: #1a1a2e; margin-bottom: 12px; font-weight: 700; }
+.thankyou p { color: #666; font-size: 0.95rem; max-width: 460px; margin: 0 auto 8px; }
+.thankyou .note { font-size: 0.85rem; color: #999; margin-top: 20px; font-style: italic; }
+
+.error-msg { background: #fff3cd; border: 1px solid #ffc107; color: #856404; padding: 10px 16px; border-radius: 7px; font-size: 0.9rem; margin-bottom: 16px; display: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="site-header">
+    <h1>AI Agent Reliability — Validation Survey</h1>
+    <p class="sub">Independent market research &nbsp;·&nbsp; ~10–12 minutes &nbsp;·&nbsp; Anonymous</p>
+  </div>
+
+  <div class="cover">
+    <p class="label">A note from the person who sent you this</p>
+    <p>Hey,</p>
+    <p>My friend Amit is doing independent market research on a problem he keeps
+    hearing about from people who build and manage AI agents: you have traces,
+    logs, and dashboards — but you still don't really know when something is
+    silently going wrong, until a user or regulator tells you.</p>
+    <p>He's not building anything yet. He's talking to engineers, platform teams,
+    compliance leaders, and PMs to find out whether the pain is as real and
+    widespread as the data suggests. No sales pitch — just trying to validate
+    before going further.</p>
+    <div class="callout">If this resonates, it's worth 10 minutes of your time.</div>
+    <p>[Your Name]</p>
+    <hr>
+    <p class="fine-print">The survey is anonymous. Amit will share a summary of findings with everyone who participates.</p>
+  </div>
+
+  <form id="survey" novalidate>
+
+    <div class="persona-picker">
+      <h2>Who are you?</h2>
+      <p class="picker-desc">Select the option that best describes your role. The survey will show the questions most relevant to you.</p>
+      <div id="err-msg" class="error-msg">Please select your role before submitting.</div>
+      <div class="persona-cards">
+
+        <label class="persona-card" id="card-alex">
+          <input type="radio" name="persona" value="alex">
+          <div>
+            <div class="card-title">Agent Engineer</div>
+            <div class="card-desc">You build or maintain AI agents in production</div>
+          </div>
+        </label>
+
+        <label class="persona-card" id="card-priya">
+          <input type="radio" name="persona" value="priya">
+          <div>
+            <div class="card-title">Platform Engineer</div>
+            <div class="card-desc">You own AI infrastructure or observability across teams</div>
+          </div>
+        </label>
+
+        <label class="persona-card" id="card-chris">
+          <input type="radio" name="persona" value="chris">
+          <div>
+            <div class="card-title">Compliance / Risk Officer</div>
+            <div class="card-desc">You're responsible for AI risk, governance, or compliance</div>
+          </div>
+        </label>
+
+        <label class="persona-card" id="card-sam">
+          <input type="radio" name="persona" value="sam">
+          <div>
+            <div class="card-title">AI Product Manager</div>
+            <div class="card-desc">You manage or influence an AI-powered product or feature</div>
+          </div>
+        </label>
+
+      </div>
+    </div>
+
+    <div id="sec-alex" class="persona-sec" hidden>
+<h3 class="sec-hdr">Section 1 — Your Setup</h3>
+<div class="question">
+  <p class="ql">Q1. Which frameworks or SDKs do you use to build agents? (Select all that apply)</p>
+  <div class="opts">
+        <label class="opt"><input type="checkbox" name="alex_q1" value="LangChain / LangGraph"><span>LangChain / LangGraph</span></label>
+        <label class="opt"><input type="checkbox" name="alex_q1" value="CrewAI"><span>CrewAI</span></label>
+        <label class="opt"><input type="checkbox" name="alex_q1" value="Anthropic SDK (raw)"><span>Anthropic SDK (raw)</span></label>
+        <label class="opt"><input type="checkbox" name="alex_q1" value="OpenAI SDK (raw)"><span>OpenAI SDK (raw)</span></label>
+        <label class="opt"><input type="checkbox" name="alex_q1" value="AutoGen / AG2"><span>AutoGen / AG2</span></label>
+        <label class="opt"><input type="checkbox" name="alex_q1" value="Custom / in-house framework"><span>Custom / in-house framework</span></label>
+        <label class="opt"><input type="checkbox" name="alex_q1" value="Amazon Bedrock Agents"><span>Amazon Bedrock Agents</span></label>
+        <label class="opt"><input type="checkbox" name="alex_q1" value="Google Vertex AI Agents"><span>Google Vertex AI Agents</span></label>
+        <label class="opt other-row"><input type="checkbox" name="alex_q1" value="__other__"><span>Other:</span><input type="text" name="alex_q1_other" class="other-text" placeholder="please specify"></label>
+  </div>
+</div>
+<div class="question">
+  <p class="ql">Q2. How many AI agents do you currently have in production (serving real users)?</p>
+  <div class="opts">
+        <label class="opt"><input type="radio" name="alex_q2" value="None yet (pre-production)"><span>None yet (pre-production)</span></label>
+        <label class="opt"><input type="radio" name="alex_q2" value="1–2"><span>1–2</span></label>
+        <label class="opt"><input type="radio" name="alex_q2" value="3–5"><span>3–5</span></label>
+        <label class="opt"><input type="radio" name="alex_q2" value="6–15"><span>6–15</span></label>
+        <label class="opt"><input type="radio" name="alex_q2" value="16+"><span>16+</span></label>
+  </div>
+</div>
+<div class="question">
+  <p class="ql">Q3. What observability tools do you use today for agents? (Select all that apply)</p>
+  <div class="opts">
+        <label class="opt"><input type="checkbox" name="alex_q3" value="LangSmith"><span>LangSmith</span></label>
+        <label class="opt"><input type="checkbox" name="alex_q3" value="Langfuse"><span>Langfuse</span></label>
+        <label class="opt"><input type="checkbox" name="alex_q3" value="Helicone"><span>Helicone</span></label>
+        <label class="opt"><input type="checkbox" name="alex_q3" value="Arize Phoenix"><span>Arize Phoenix</span></label>
+        <label class="opt"><input type="checkbox" name="alex_q3" value="Datadog / Grafana (generic APM)"><span>Datadog / Grafana (generic APM)</span></label>
+        <label class="opt"><input type="checkbox" name="alex_q3" value="Custom logging / home-built"><span>Custom logging / home-built</span></label>
+        <label class="opt"><input type="checkbox" name="alex_q3" value="None — we look at raw logs"><span>None — we look at raw logs</span></label>
+        <label class="opt other-row"><input type="checkbox" name="alex_q3" value="__other__"><span>Other:</span><input type="text" name="alex_q3_other" class="other-text" placeholder="please specify"></label>
+  </div>
+</div>
+<h3 class="sec-hdr">Section 2 — The Real Problems</h3>
+<div class="question">
+  <p class="ql">Q4. Describe the last time an agent behaved unexpectedly in production. How did you find out? How long did it take?</p><p class="q-sub">Be specific — this is the most important question in the survey.</p>
+  <textarea name="alex_q4" rows="4" placeholder="Your answer..."></textarea>
+</div>
+<div class="question">
+  <p class="ql">Q5. "I have observability data (traces/logs) but I often don't know what to do with it or how to tell if something is actually wrong."</p>
+  <div class="likert-wrap"><table class="likert"><tr><th>1<br><small>Strongly Disagree</small></th><th>2</th><th>3<br><small>Neutral</small></th><th>4</th><th>5<br><small>Strongly Agree</small></th></tr><tr><td><input type="radio" name="alex_q5" value="1"></td><td><input type="radio" name="alex_q5" value="2"></td><td><input type="radio" name="alex_q5" value="3"></td><td><input type="radio" name="alex_q5" value="4"></td><td><input type="radio" name="alex_q5" value="5"></td></tr></table></div>
+</div>
+<div class="question">
+  <p class="ql">Q6. "To measure agent quality, I have to write a custom script every time. There's no repeatable process."</p>
+  <div class="likert-wrap"><table class="likert"><tr><th>1<br><small>Strongly Disagree</small></th><th>2</th><th>3<br><small>Neutral</small></th><th>4</th><th>5<br><small>Strongly Agree</small></th></tr><tr><td><input type="radio" name="alex_q6" value="1"></td><td><input type="radio" name="alex_q6" value="2"></td><td><input type="radio" name="alex_q6" value="3"></td><td><input type="radio" name="alex_q6" value="4"></td><td><input type="radio" name="alex_q6" value="5"></td></tr></table></div>
+</div>
+<div class="question">
+  <p class="ql">Q7. What happens when you ship a prompt change or model upgrade? How do you know if quality got better or worse across real traffic?</p>
+  <textarea name="alex_q7" rows="4" placeholder="Your answer..."></textarea>
+</div>
+<div class="question">
+  <p class="ql">Q8. "My current setup would alert me within 15 minutes if my agent started silently failing on a new class of user requests."</p>
+  <div class="likert-wrap"><table class="likert"><tr><th>1<br><small>Strongly Disagree</small></th><th>2</th><th>3<br><small>Neutral</small></th><th>4</th><th>5<br><small>Strongly Agree</small></th></tr><tr><td><input type="radio" name="alex_q8" value="1"></td><td><input type="radio" name="alex_q8" value="2"></td><td><input type="radio" name="alex_q8" value="3"></td><td><input type="radio" name="alex_q8" value="4"></td><td><input type="radio" name="alex_q8" value="5"></td></tr></table></div>
+</div>
+<div class="question">
+  <p class="ql">Q9. What is your single biggest frustration with how you currently monitor or evaluate agents?</p><p class="q-sub">Not a multiple choice — we want your words.</p>
+  <textarea name="alex_q9" rows="4" placeholder="Your answer..."></textarea>
+</div>
+<h3 class="sec-hdr">Section 3 — Desirability & Fit</h3>
+<div class="question">
+  <p class="ql">Q10. "Automatic quality scoring on every trace — without me writing the scoring logic — would save me meaningful time each week."</p>
+  <div class="likert-wrap"><table class="likert"><tr><th>1<br><small>Strongly Disagree</small></th><th>2</th><th>3<br><small>Neutral</small></th><th>4</th><th>5<br><small>Strongly Agree</small></th></tr><tr><td><input type="radio" name="alex_q10" value="1"></td><td><input type="radio" name="alex_q10" value="2"></td><td><input type="radio" name="alex_q10" value="3"></td><td><input type="radio" name="alex_q10" value="4"></td><td><input type="radio" name="alex_q10" value="5"></td></tr></table></div>
+</div>
+<div class="question">
+  <p class="ql">Q11. "A before/after quality diff when I push a prompt change would change how I ship agent updates."</p>
+  <div class="likert-wrap"><table class="likert"><tr><th>1<br><small>Not useful</small></th><th>2</th><th>3<br><small>Neutral</small></th><th>4</th><th>5<br><small>Game-changing</small></th></tr><tr><td><input type="radio" name="alex_q11" value="1"></td><td><input type="radio" name="alex_q11" value="2"></td><td><input type="radio" name="alex_q11" value="3"></td><td><input type="radio" name="alex_q11" value="4"></td><td><input type="radio" name="alex_q11" value="5"></td></tr></table></div>
+</div>
+<div class="question">
+  <p class="ql">Q12. If a tool automatically detected when your agent's behavior degraded and alerted you (Slack/PagerDuty) before users complained — what would that be worth to you?</p><p class="q-sub">Think in terms of hours saved, incidents avoided, or $ if you prefer.</p>
+  <textarea name="alex_q12" rows="4" placeholder="Your answer..."></textarea>
+</div>
+<div class="question">
+  <p class="ql">Q13. What would make you adopt a new agent reliability tool? (Select top 2)</p>
+  <div class="opts">
+        <label class="opt"><input type="checkbox" name="alex_q13" value="OSS / self-hostable"><span>OSS / self-hostable</span></label>
+        <label class="opt"><input type="checkbox" name="alex_q13" value="Free tier with no credit card"><span>Free tier with no credit card</span></label>
+        <label class="opt"><input type="checkbox" name="alex_q13" value="Works with my existing framework (no rewrite)"><span>Works with my existing framework (no rewrite)</span></label>
+        <label class="opt"><input type="checkbox" name="alex_q13" value="Shows value in < 1 day of setup"><span>Shows value in < 1 day of setup</span></label>
+        <label class="opt"><input type="checkbox" name="alex_q13" value="Team at my company already uses it"><span>Team at my company already uses it</span></label>
+        <label class="opt"><input type="checkbox" name="alex_q13" value="Recommended by someone I trust"><span>Recommended by someone I trust</span></label>
+  </div>
+</div>
+<h3 class="sec-hdr">Section 4 — Willingness to Pay</h3>
+<div class="question">
+  <p class="ql">Q14. If this tool saved you 2–3 hours per week on debugging and eval, what would a fair individual / team price be?</p>
+  <div class="opts">
+        <label class="opt"><input type="radio" name="alex_q14" value="Free only — I'd use OSS"><span>Free only — I'd use OSS</span></label>
+        <label class="opt"><input type="radio" name="alex_q14" value="$0–$50/month (personal)"><span>$0–$50/month (personal)</span></label>
+        <label class="opt"><input type="radio" name="alex_q14" value="$50–$200/month (team plan)"><span>$50–$200/month (team plan)</span></label>
+        <label class="opt"><input type="radio" name="alex_q14" value="$200–$500/month (team plan)"><span>$200–$500/month (team plan)</span></label>
+        <label class="opt"><input type="radio" name="alex_q14" value="My company would pay > $500/month — I'd expense it"><span>My company would pay > $500/month — I'd expense it</span></label>
+  </div>
+</div>
+<h3 class="sec-hdr">Section 5 — Anything Else</h3>
+<div class="question">
+  <p class="ql">Q15. Is there a tool, open-source project, or internal system you've seen that gets closest to solving this? What does it do well or poorly?</p>
+  <textarea name="alex_q15" rows="4" placeholder="Your answer..."></textarea>
+</div>
+<div class="question">
+  <p class="ql">Q16. Would you be open to a 20-minute follow-up call? If yes, please leave your name / email / LinkedIn below.</p><p class="q-sub">Completely optional — we'll share findings with anyone who participates.</p>
+  <textarea name="alex_q16" rows="4" placeholder="Your answer..."></textarea>
+</div>
+</div>
+
+    <div id="sec-priya" class="persona-sec" hidden>
+<h3 class="sec-hdr">Section 1 — Your Environment</h3>
+<div class="question">
+  <p class="ql">Q1. How many distinct AI agent workflows or pipelines does your org run in production?</p>
+  <div class="opts">
+        <label class="opt"><input type="radio" name="priya_q1" value="1–3"><span>1–3</span></label>
+        <label class="opt"><input type="radio" name="priya_q1" value="4–10"><span>4–10</span></label>
+        <label class="opt"><input type="radio" name="priya_q1" value="11–30"><span>11–30</span></label>
+        <label class="opt"><input type="radio" name="priya_q1" value="30+"><span>30+</span></label>
+        <label class="opt"><input type="radio" name="priya_q1" value="Don't know — teams run their own"><span>Don't know — teams run their own</span></label>
+  </div>
+</div>
+<div class="question">
+  <p class="ql">Q2. Which describes your current agent observability situation best?</p>
+  <div class="opts">
+        <label class="opt"><input type="radio" name="priya_q2" value="Each team has its own logging — no unified view"><span>Each team has its own logging — no unified view</span></label>
+        <label class="opt"><input type="radio" name="priya_q2" value="We standardized on one tool (LangSmith / Langfuse / etc.)"><span>We standardized on one tool (LangSmith / Langfuse / etc.)</span></label>
+        <label class="opt"><input type="radio" name="priya_q2" value="We built internal tooling to aggregate across teams"><span>We built internal tooling to aggregate across teams</span></label>
+        <label class="opt"><input type="radio" name="priya_q2" value="We plugged agents into existing APM (Datadog / Grafana)"><span>We plugged agents into existing APM (Datadog / Grafana)</span></label>
+        <label class="opt"><input type="radio" name="priya_q2" value="We have no agent-specific observability — just app logs"><span>We have no agent-specific observability — just app logs</span></label>
+  </div>
+</div>
+<div class="question">
+  <p class="ql">Q3. Which AI frameworks are in use across your org? (Select all that apply)</p>
+  <div class="opts">
+        <label class="opt"><input type="checkbox" name="priya_q3" value="LangChain / LangGraph"><span>LangChain / LangGraph</span></label>
+        <label class="opt"><input type="checkbox" name="priya_q3" value="CrewAI"><span>CrewAI</span></label>
+        <label class="opt"><input type="checkbox" name="priya_q3" value="AutoGen / AG2"><span>AutoGen / AG2</span></label>
+        <label class="opt"><input type="checkbox" name="priya_q3" value="Anthropic SDK (raw)"><span>Anthropic SDK (raw)</span></label>
+        <label class="opt"><input type="checkbox" name="priya_q3" value="OpenAI SDK (raw)"><span>OpenAI SDK (raw)</span></label>
+        <label class="opt"><input type="checkbox" name="priya_q3" value="Amazon Bedrock"><span>Amazon Bedrock</span></label>
+        <label class="opt"><input type="checkbox" name="priya_q3" value="Custom / in-house"><span>Custom / in-house</span></label>
+        <label class="opt"><input type="checkbox" name="priya_q3" value="Multiple — varies by team"><span>Multiple — varies by team</span></label>
+        <label class="opt other-row"><input type="checkbox" name="priya_q3" value="__other__"><span>Other:</span><input type="text" name="priya_q3_other" class="other-text" placeholder="please specify"></label>
+  </div>
+</div>
+<h3 class="sec-hdr">Section 2 — The Real Problems</h3>
+<div class="question">
+  <p class="ql">Q4. "Our agent observability is fragmented — different teams use different tools and I can't get a single view across all agents."</p>
+  <div class="likert-wrap"><table class="likert"><tr><th>1<br><small>Strongly Disagree</small></th><th>2</th><th>3<br><small>Neutral</small></th><th>4</th><th>5<br><small>Strongly Agree</small></th></tr><tr><td><input type="radio" name="priya_q4" value="1"></td><td><input type="radio" name="priya_q4" value="2"></td><td><input type="radio" name="priya_q4" value="3"></td><td><input type="radio" name="priya_q4" value="4"></td><td><input type="radio" name="priya_q4" value="5"></td></tr></table></div>
+</div>
+<div class="question">
+  <p class="ql">Q5. When compliance or your CISO asks for an audit trail of what your agents did and why — what do you give them today? How painful is that process?</p><p class="q-sub">Be specific about the manual steps involved.</p>
+  <textarea name="priya_q5" rows="4" placeholder="Your answer..."></textarea>
+</div>
+<div class="question">
+  <p class="ql">Q6. "I spend significant engineering time building internal tooling to make agents observable, instead of shipping agent features."</p>
+  <div class="likert-wrap"><table class="likert"><tr><th>1<br><small>Strongly Disagree</small></th><th>2</th><th>3<br><small>Neutral</small></th><th>4</th><th>5<br><small>Strongly Agree</small></th></tr><tr><td><input type="radio" name="priya_q6" value="1"></td><td><input type="radio" name="priya_q6" value="2"></td><td><input type="radio" name="priya_q6" value="3"></td><td><input type="radio" name="priya_q6" value="4"></td><td><input type="radio" name="priya_q6" value="5"></td></tr></table></div>
+</div>
+<div class="question">
+  <p class="ql">Q7. Describe the hardest incident you've had with a production agent. How did you diagnose it? What would have helped you find it faster?</p>
+  <textarea name="priya_q7" rows="4" placeholder="Your answer..."></textarea>
+</div>
+<div class="question">
+  <p class="ql">Q8. "We have governance gaps — I can't easily answer which agents are allowed to call which external tools, or enforce budget limits per team."</p>
+  <div class="likert-wrap"><table class="likert"><tr><th>1<br><small>Strongly Disagree</small></th><th>2</th><th>3<br><small>Neutral</small></th><th>4</th><th>5<br><small>Strongly Agree</small></th></tr><tr><td><input type="radio" name="priya_q8" value="1"></td><td><input type="radio" name="priya_q8" value="2"></td><td><input type="radio" name="priya_q8" value="3"></td><td><input type="radio" name="priya_q8" value="4"></td><td><input type="radio" name="priya_q8" value="5"></td></tr></table></div>
+</div>
+<div class="question">
+  <p class="ql">Q9. If you could wave a magic wand and fix ONE thing about agent observability across your org — what would it be?</p>
+  <textarea name="priya_q9" rows="4" placeholder="Your answer..."></textarea>
+</div>
+<h3 class="sec-hdr">Section 3 — Desirability & Fit</h3>
+<div class="question">
+  <p class="ql">Q10. "A single observability layer that works regardless of which framework each team chose would meaningfully reduce my team's burden."</p>
+  <div class="likert-wrap"><table class="likert"><tr><th>1<br><small>Strongly Disagree</small></th><th>2</th><th>3<br><small>Neutral</small></th><th>4</th><th>5<br><small>Strongly Agree</small></th></tr><tr><td><input type="radio" name="priya_q10" value="1"></td><td><input type="radio" name="priya_q10" value="2"></td><td><input type="radio" name="priya_q10" value="3"></td><td><input type="radio" name="priya_q10" value="4"></td><td><input type="radio" name="priya_q10" value="5"></td></tr></table></div>
+</div>
+<div class="question">
+  <p class="ql">Q11. "Policy-as-code for agents — defining which agents can call which tools, with enforcement — is something I'd want to own."</p>
+  <div class="likert-wrap"><table class="likert"><tr><th>1<br><small>Not relevant to me</small></th><th>2</th><th>3<br><small>Neutral</small></th><th>4</th><th>5<br><small>High priority for me</small></th></tr><tr><td><input type="radio" name="priya_q11" value="1"></td><td><input type="radio" name="priya_q11" value="2"></td><td><input type="radio" name="priya_q11" value="3"></td><td><input type="radio" name="priya_q11" value="4"></td><td><input type="radio" name="priya_q11" value="5"></td></tr></table></div>
+</div>
+<div class="question">
+  <p class="ql">Q12. Which integrations would be required for you to adopt a new agent observability platform? (Select all that apply)</p>
+  <div class="opts">
+        <label class="opt"><input type="checkbox" name="priya_q12" value="Datadog"><span>Datadog</span></label>
+        <label class="opt"><input type="checkbox" name="priya_q12" value="Grafana / Prometheus"><span>Grafana / Prometheus</span></label>
+        <label class="opt"><input type="checkbox" name="priya_q12" value="Splunk"><span>Splunk</span></label>
+        <label class="opt"><input type="checkbox" name="priya_q12" value="PagerDuty / OpsGenie"><span>PagerDuty / OpsGenie</span></label>
+        <label class="opt"><input type="checkbox" name="priya_q12" value="Slack"><span>Slack</span></label>
+        <label class="opt"><input type="checkbox" name="priya_q12" value="SSO / SAML"><span>SSO / SAML</span></label>
+        <label class="opt"><input type="checkbox" name="priya_q12" value="OpenTelemetry (OTel) native"><span>OpenTelemetry (OTel) native</span></label>
+        <label class="opt"><input type="checkbox" name="priya_q12" value="SOC 2 / data residency controls"><span>SOC 2 / data residency controls</span></label>
+        <label class="opt other-row"><input type="checkbox" name="priya_q12" value="__other__"><span>Other:</span><input type="text" name="priya_q12_other" class="other-text" placeholder="please specify"></label>
+  </div>
+</div>
+<div class="question">
+  <p class="ql">Q13. What would a working demo need to show you for you to champion this internally to get it evaluated?</p>
+  <textarea name="priya_q13" rows="4" placeholder="Your answer..."></textarea>
+</div>
+<h3 class="sec-hdr">Section 4 — Budget & Procurement</h3>
+<div class="question">
+  <p class="ql">Q14. What is a realistic annual contract range for a platform-level agent observability / governance tool at your company?</p>
+  <div class="opts">
+        <label class="opt"><input type="radio" name="priya_q14" value="We wouldn't buy — we'd build in-house"><span>We wouldn't buy — we'd build in-house</span></label>
+        <label class="opt"><input type="radio" name="priya_q14" value="< $25K/yr"><span>< $25K/yr</span></label>
+        <label class="opt"><input type="radio" name="priya_q14" value="$25K–$75K/yr"><span>$25K–$75K/yr</span></label>
+        <label class="opt"><input type="radio" name="priya_q14" value="$75K–$200K/yr"><span>$75K–$200K/yr</span></label>
+        <label class="opt"><input type="radio" name="priya_q14" value="$200K–$500K/yr"><span>$200K–$500K/yr</span></label>
+        <label class="opt"><input type="radio" name="priya_q14" value="> $500K/yr"><span>> $500K/yr</span></label>
+  </div>
+</div>
+<div class="question">
+  <p class="ql">Q15. Who else needs to sign off on a purchase like this at your company? What does that procurement process look like?</p><p class="q-sub">(e.g., CISO, legal, VP Eng, procurement team)</p>
+  <textarea name="priya_q15" rows="4" placeholder="Your answer..."></textarea>
+</div>
+<h3 class="sec-hdr">Section 5 — Anything Else</h3>
+<div class="question">
+  <p class="ql">Q16. Are there tools or vendors you've evaluated (or are evaluating) in this space? What did you like or dislike about them?</p>
+  <textarea name="priya_q16" rows="4" placeholder="Your answer..."></textarea>
+</div>
+<div class="question">
+  <p class="ql">Q17. Would you be open to a 30-minute follow-up call? If yes, please leave your name / email / LinkedIn below.</p><p class="q-sub">Completely optional — we'll share findings with anyone who participates.</p>
+  <textarea name="priya_q17" rows="4" placeholder="Your answer..."></textarea>
+</div>
+</div>
+
+    <div id="sec-chris" class="persona-sec" hidden>
+<h3 class="sec-hdr">Section 1 — Your Role & AI Exposure</h3>
+<div class="question">
+  <p class="ql">Q1. Which best describes your role?</p>
+  <div class="opts">
+        <label class="opt"><input type="radio" name="chris_q1" value="Chief Compliance Officer (CCO)"><span>Chief Compliance Officer (CCO)</span></label>
+        <label class="opt"><input type="radio" name="chris_q1" value="VP / Director of Risk"><span>VP / Director of Risk</span></label>
+        <label class="opt"><input type="radio" name="chris_q1" value="AI Governance Lead / AI Ethics Officer"><span>AI Governance Lead / AI Ethics Officer</span></label>
+        <label class="opt"><input type="radio" name="chris_q1" value="General Counsel / Legal"><span>General Counsel / Legal</span></label>
+        <label class="opt"><input type="radio" name="chris_q1" value="CISO / Chief Security Officer"><span>CISO / Chief Security Officer</span></label>
+        <label class="opt other-row"><input type="radio" name="chris_q1" value="__other__"><span>Other:</span><input type="text" name="chris_q1_other" class="other-text" placeholder="please specify"></label>
+  </div>
+</div>
+<div class="question">
+  <p class="ql">Q2. Which industry are you in?</p>
+  <div class="opts">
+        <label class="opt"><input type="radio" name="chris_q2" value="Financial Services / Banking"><span>Financial Services / Banking</span></label>
+        <label class="opt"><input type="radio" name="chris_q2" value="Insurance"><span>Insurance</span></label>
+        <label class="opt"><input type="radio" name="chris_q2" value="Healthcare / Life Sciences"><span>Healthcare / Life Sciences</span></label>
+        <label class="opt"><input type="radio" name="chris_q2" value="Legal / Professional Services"><span>Legal / Professional Services</span></label>
+        <label class="opt"><input type="radio" name="chris_q2" value="Government / Public Sector"><span>Government / Public Sector</span></label>
+        <label class="opt"><input type="radio" name="chris_q2" value="Retail / E-Commerce"><span>Retail / E-Commerce</span></label>
+        <label class="opt"><input type="radio" name="chris_q2" value="Technology"><span>Technology</span></label>
+        <label class="opt other-row"><input type="radio" name="chris_q2" value="__other__"><span>Other:</span><input type="text" name="chris_q2_other" class="other-text" placeholder="please specify"></label>
+  </div>
+</div>
+<div class="question">
+  <p class="ql">Q3. How many AI agents or AI-powered automated workflows does your organization have making consequential decisions today (e.g., credit, claims, triage, content moderation)?</p>
+  <div class="opts">
+        <label class="opt"><input type="radio" name="chris_q3" value="None yet"><span>None yet</span></label>
+        <label class="opt"><input type="radio" name="chris_q3" value="1–5"><span>1–5</span></label>
+        <label class="opt"><input type="radio" name="chris_q3" value="6–20"><span>6–20</span></label>
+        <label class="opt"><input type="radio" name="chris_q3" value="21–50"><span>21–50</span></label>
+        <label class="opt"><input type="radio" name="chris_q3" value="50+"><span>50+</span></label>
+        <label class="opt"><input type="radio" name="chris_q3" value="I don't know — engineering handles that"><span>I don't know — engineering handles that</span></label>
+  </div>
+</div>
+<h3 class="sec-hdr">Section 2 — The Compliance Reality</h3>
+<div class="question">
+  <p class="ql">Q4. If a regulator asked you today to explain exactly why your AI system made a specific decision last quarter — what would you do? How confident are you in your answer?</p><p class="q-sub">Walk us through the actual process, not the ideal one.</p>
+  <textarea name="chris_q4" rows="4" placeholder="Your answer..."></textarea>
+</div>
+<div class="question">
+  <p class="ql">Q5. "I could produce a complete, human-readable audit trail for any AI agent decision in the past 12 months within 24 hours."</p>
+  <div class="likert-wrap"><table class="likert"><tr><th>1<br><small>Strongly Disagree</small></th><th>2</th><th>3<br><small>Neutral</small></th><th>4</th><th>5<br><small>Strongly Agree</small></th></tr><tr><td><input type="radio" name="chris_q5" value="1"></td><td><input type="radio" name="chris_q5" value="2"></td><td><input type="radio" name="chris_q5" value="3"></td><td><input type="radio" name="chris_q5" value="4"></td><td><input type="radio" name="chris_q5" value="5"></td></tr></table></div>
+</div>
+<div class="question">
+  <p class="ql">Q6. Which regulations or frameworks are you actively preparing for? (Select all that apply)</p>
+  <div class="opts">
+        <label class="opt"><input type="checkbox" name="chris_q6" value="EU AI Act (Articles 13/17 — high-risk systems)"><span>EU AI Act (Articles 13/17 — high-risk systems)</span></label>
+        <label class="opt"><input type="checkbox" name="chris_q6" value="NIST AI Risk Management Framework"><span>NIST AI Risk Management Framework</span></label>
+        <label class="opt"><input type="checkbox" name="chris_q6" value="SEC AI guidance (2025/2026)"><span>SEC AI guidance (2025/2026)</span></label>
+        <label class="opt"><input type="checkbox" name="chris_q6" value="CFPB / Fair lending (ECOA, FCRA)"><span>CFPB / Fair lending (ECOA, FCRA)</span></label>
+        <label class="opt"><input type="checkbox" name="chris_q6" value="HIPAA / healthcare AI rules"><span>HIPAA / healthcare AI rules</span></label>
+        <label class="opt"><input type="checkbox" name="chris_q6" value="Internal AI governance policy"><span>Internal AI governance policy</span></label>
+        <label class="opt"><input type="checkbox" name="chris_q6" value="None formally — we're self-governing"><span>None formally — we're self-governing</span></label>
+        <label class="opt other-row"><input type="checkbox" name="chris_q6" value="__other__"><span>Other:</span><input type="text" name="chris_q6_other" class="other-text" placeholder="please specify"></label>
+  </div>
+</div>
+<div class="question">
+  <p class="ql">Q7. "The regulatory pressure around AI decisions has increased meaningfully in the past 12 months."</p>
+  <div class="likert-wrap"><table class="likert"><tr><th>1<br><small>Strongly Disagree</small></th><th>2</th><th>3<br><small>Neutral</small></th><th>4</th><th>5<br><small>Strongly Agree</small></th></tr><tr><td><input type="radio" name="chris_q7" value="1"></td><td><input type="radio" name="chris_q7" value="2"></td><td><input type="radio" name="chris_q7" value="3"></td><td><input type="radio" name="chris_q7" value="4"></td><td><input type="radio" name="chris_q7" value="5"></td></tr></table></div>
+</div>
+<div class="question">
+  <p class="ql">Q8. What does engineering currently give you when you ask for an AI audit trail or compliance report? How usable is it?</p><p class="q-sub">Be honest — 'they give us S3 log dumps' is a completely valid answer.</p>
+  <textarea name="chris_q8" rows="4" placeholder="Your answer..."></textarea>
+</div>
+<div class="question">
+  <p class="ql">Q9. "I am confident that our AI agents operate within the policies and boundaries we've defined for them."</p>
+  <div class="likert-wrap"><table class="likert"><tr><th>1<br><small>Strongly Disagree</small></th><th>2</th><th>3<br><small>Neutral</small></th><th>4</th><th>5<br><small>Strongly Agree</small></th></tr><tr><td><input type="radio" name="chris_q9" value="1"></td><td><input type="radio" name="chris_q9" value="2"></td><td><input type="radio" name="chris_q9" value="3"></td><td><input type="radio" name="chris_q9" value="4"></td><td><input type="radio" name="chris_q9" value="5"></td></tr></table></div>
+</div>
+<h3 class="sec-hdr">Section 3 — Desirability & Fit</h3>
+<div class="question">
+  <p class="ql">Q10. "A dashboard where I can view what any AI agent did and why — without needing engineering to pull logs — would be valuable."</p>
+  <div class="likert-wrap"><table class="likert"><tr><th>1<br><small>Strongly Disagree</small></th><th>2</th><th>3<br><small>Neutral</small></th><th>4</th><th>5<br><small>Strongly Agree</small></th></tr><tr><td><input type="radio" name="chris_q10" value="1"></td><td><input type="radio" name="chris_q10" value="2"></td><td><input type="radio" name="chris_q10" value="3"></td><td><input type="radio" name="chris_q10" value="4"></td><td><input type="radio" name="chris_q10" value="5"></td></tr></table></div>
+</div>
+<div class="question">
+  <p class="ql">Q11. "Tamper-evident, timestamped records of every AI decision — ready for regulatory submission — would reduce my team's workload."</p>
+  <div class="likert-wrap"><table class="likert"><tr><th>1<br><small>Not useful</small></th><th>2</th><th>3<br><small>Neutral</small></th><th>4</th><th>5<br><small>Extremely valuable</small></th></tr><tr><td><input type="radio" name="chris_q11" value="1"></td><td><input type="radio" name="chris_q11" value="2"></td><td><input type="radio" name="chris_q11" value="3"></td><td><input type="radio" name="chris_q11" value="4"></td><td><input type="radio" name="chris_q11" value="5"></td></tr></table></div>
+</div>
+<div class="question">
+  <p class="ql">Q12. What would give you enough confidence to attest to a regulator that your AI systems are operating within policy? What evidence or controls would you need?</p>
+  <textarea name="chris_q12" rows="4" placeholder="Your answer..."></textarea>
+</div>
+<div class="question">
+  <p class="ql">Q13. Which data residency / security requirements are non-negotiable for any AI governance tool you'd adopt? (Select all that apply)</p>
+  <div class="opts">
+        <label class="opt"><input type="checkbox" name="chris_q13" value="Data must stay in US"><span>Data must stay in US</span></label>
+        <label class="opt"><input type="checkbox" name="chris_q13" value="Data must stay in EU"><span>Data must stay in EU</span></label>
+        <label class="opt"><input type="checkbox" name="chris_q13" value="SOC 2 Type II certification required"><span>SOC 2 Type II certification required</span></label>
+        <label class="opt"><input type="checkbox" name="chris_q13" value="ISO 27001 required"><span>ISO 27001 required</span></label>
+        <label class="opt"><input type="checkbox" name="chris_q13" value="On-prem / private cloud deployment required"><span>On-prem / private cloud deployment required</span></label>
+        <label class="opt"><input type="checkbox" name="chris_q13" value="SSO / SAML integration required"><span>SSO / SAML integration required</span></label>
+        <label class="opt"><input type="checkbox" name="chris_q13" value="No third-party data sharing"><span>No third-party data sharing</span></label>
+        <label class="opt other-row"><input type="checkbox" name="chris_q13" value="__other__"><span>Other:</span><input type="text" name="chris_q13_other" class="other-text" placeholder="please specify"></label>
+  </div>
+</div>
+<h3 class="sec-hdr">Section 4 — Budget & Urgency</h3>
+<div class="question">
+  <p class="ql">Q14. How urgent is solving the AI audit trail / governance gap for your organization?</p>
+  <div class="opts">
+        <label class="opt"><input type="radio" name="chris_q14" value="Not urgent — we have time"><span>Not urgent — we have time</span></label>
+        <label class="opt"><input type="radio" name="chris_q14" value="Moderate — within 12–18 months"><span>Moderate — within 12–18 months</span></label>
+        <label class="opt"><input type="radio" name="chris_q14" value="High — within 6 months"><span>High — within 6 months</span></label>
+        <label class="opt"><input type="radio" name="chris_q14" value="Critical — we need this now, regulation is forcing our hand"><span>Critical — we need this now, regulation is forcing our hand</span></label>
+  </div>
+</div>
+<div class="question">
+  <p class="ql">Q15. What is a realistic annual budget for an AI governance / compliance platform?</p>
+  <div class="opts">
+        <label class="opt"><input type="radio" name="chris_q15" value="< $50K/yr"><span>< $50K/yr</span></label>
+        <label class="opt"><input type="radio" name="chris_q15" value="$50K–$150K/yr"><span>$50K–$150K/yr</span></label>
+        <label class="opt"><input type="radio" name="chris_q15" value="$150K–$500K/yr"><span>$150K–$500K/yr</span></label>
+        <label class="opt"><input type="radio" name="chris_q15" value="> $500K/yr — this is a strategic buy"><span>> $500K/yr — this is a strategic buy</span></label>
+        <label class="opt"><input type="radio" name="chris_q15" value="Budget not set — depends on what it can do"><span>Budget not set — depends on what it can do</span></label>
+  </div>
+</div>
+<h3 class="sec-hdr">Section 5 — Anything Else</h3>
+<div class="question">
+  <p class="ql">Q16. Have you evaluated any vendors in the AI governance or compliance space? What did you find? What was missing?</p>
+  <textarea name="chris_q16" rows="4" placeholder="Your answer..."></textarea>
+</div>
+<div class="question">
+  <p class="ql">Q17. Would you be open to a 30-minute follow-up call? If yes, please leave your name / email / LinkedIn below.</p><p class="q-sub">Completely optional — we'll share a summary of findings with all participants.</p>
+  <textarea name="chris_q17" rows="4" placeholder="Your answer..."></textarea>
+</div>
+</div>
+
+    <div id="sec-sam" class="persona-sec" hidden>
+<h3 class="sec-hdr">Section 1 — Your Context</h3>
+<div class="question">
+  <p class="ql">Q1. Which best describes your role?</p>
+  <div class="opts">
+        <label class="opt"><input type="radio" name="sam_q1" value="Product Manager (AI features / products)"><span>Product Manager (AI features / products)</span></label>
+        <label class="opt"><input type="radio" name="sam_q1" value="Senior PM / Group PM"><span>Senior PM / Group PM</span></label>
+        <label class="opt"><input type="radio" name="sam_q1" value="Director of Product"><span>Director of Product</span></label>
+        <label class="opt"><input type="radio" name="sam_q1" value="VP Product / Chief Product Officer"><span>VP Product / Chief Product Officer</span></label>
+        <label class="opt other-row"><input type="radio" name="sam_q1" value="__other__"><span>Other:</span><input type="text" name="sam_q1_other" class="other-text" placeholder="please specify"></label>
+  </div>
+</div>
+<div class="question">
+  <p class="ql">Q2. What type of AI agent or AI feature are you responsible for?</p>
+  <div class="opts">
+        <label class="opt"><input type="radio" name="sam_q2" value="Customer-facing chatbot or assistant"><span>Customer-facing chatbot or assistant</span></label>
+        <label class="opt"><input type="radio" name="sam_q2" value="Internal copilot / productivity tool"><span>Internal copilot / productivity tool</span></label>
+        <label class="opt"><input type="radio" name="sam_q2" value="Automated workflow or decision agent"><span>Automated workflow or decision agent</span></label>
+        <label class="opt"><input type="radio" name="sam_q2" value="Recommendation or personalization system"><span>Recommendation or personalization system</span></label>
+        <label class="opt"><input type="radio" name="sam_q2" value="Code generation / developer tool"><span>Code generation / developer tool</span></label>
+        <label class="opt other-row"><input type="radio" name="sam_q2" value="__other__"><span>Other:</span><input type="text" name="sam_q2_other" class="other-text" placeholder="please specify"></label>
+  </div>
+</div>
+<div class="question">
+  <p class="ql">Q3. How do you currently measure whether your AI feature is working well? (Select all that apply)</p>
+  <div class="opts">
+        <label class="opt"><input type="checkbox" name="sam_q3" value="Customer satisfaction / CSAT scores"><span>Customer satisfaction / CSAT scores</span></label>
+        <label class="opt"><input type="checkbox" name="sam_q3" value="Support ticket volume"><span>Support ticket volume</span></label>
+        <label class="opt"><input type="checkbox" name="sam_q3" value="NPS / user surveys"><span>NPS / user surveys</span></label>
+        <label class="opt"><input type="checkbox" name="sam_q3" value="I ask engineering to check the logs"><span>I ask engineering to check the logs</span></label>
+        <label class="opt"><input type="checkbox" name="sam_q3" value="Automated evals (LLM-as-judge or rule-based)"><span>Automated evals (LLM-as-judge or rule-based)</span></label>
+        <label class="opt"><input type="checkbox" name="sam_q3" value="Usage / engagement metrics"><span>Usage / engagement metrics</span></label>
+        <label class="opt"><input type="checkbox" name="sam_q3" value="We don't have a good measurement system"><span>We don't have a good measurement system</span></label>
+  </div>
+</div>
+<h3 class="sec-hdr">Section 2 — The Real Problems</h3>
+<div class="question">
+  <p class="ql">Q4. Describe the last time you suspected your AI feature had a quality issue. How did you find out, and how long did it take to confirm?</p><p class="q-sub">Be specific — 'a customer complained 3 days after a deploy' is a perfect answer.</p>
+  <textarea name="sam_q4" rows="4" placeholder="Your answer..."></textarea>
+</div>
+<div class="question">
+  <p class="ql">Q5. "Every time I need to understand if the agent is performing well, I have to wait for engineering to pull data or write a script."</p>
+  <div class="likert-wrap"><table class="likert"><tr><th>1<br><small>Strongly Disagree</small></th><th>2</th><th>3<br><small>Neutral</small></th><th>4</th><th>5<br><small>Strongly Agree</small></th></tr><tr><td><input type="radio" name="sam_q5" value="1"></td><td><input type="radio" name="sam_q5" value="2"></td><td><input type="radio" name="sam_q5" value="3"></td><td><input type="radio" name="sam_q5" value="4"></td><td><input type="radio" name="sam_q5" value="5"></td></tr></table></div>
+</div>
+<div class="question">
+  <p class="ql">Q6. "When we ship a prompt change or model upgrade, I don't have a reliable way to know if quality got better or worse before users tell me."</p>
+  <div class="likert-wrap"><table class="likert"><tr><th>1<br><small>Strongly Disagree</small></th><th>2</th><th>3<br><small>Neutral</small></th><th>4</th><th>5<br><small>Strongly Agree</small></th></tr><tr><td><input type="radio" name="sam_q6" value="1"></td><td><input type="radio" name="sam_q6" value="2"></td><td><input type="radio" name="sam_q6" value="3"></td><td><input type="radio" name="sam_q6" value="4"></td><td><input type="radio" name="sam_q6" value="5"></td></tr></table></div>
+</div>
+<div class="question">
+  <p class="ql">Q7. How do you decide when an AI feature is ready to ship? What's your current process for validating quality before release?</p>
+  <textarea name="sam_q7" rows="4" placeholder="Your answer..."></textarea>
+</div>
+<div class="question">
+  <p class="ql">Q8. "The engineering team is the bottleneck for answering quality questions about our AI features — I can't get answers fast enough to move quickly."</p>
+  <div class="likert-wrap"><table class="likert"><tr><th>1<br><small>Strongly Disagree</small></th><th>2</th><th>3<br><small>Neutral</small></th><th>4</th><th>5<br><small>Strongly Agree</small></th></tr><tr><td><input type="radio" name="sam_q8" value="1"></td><td><input type="radio" name="sam_q8" value="2"></td><td><input type="radio" name="sam_q8" value="3"></td><td><input type="radio" name="sam_q8" value="4"></td><td><input type="radio" name="sam_q8" value="5"></td></tr></table></div>
+</div>
+<div class="question">
+  <p class="ql">Q9. What's the most frustrating part of managing an AI feature compared to a traditional software feature?</p><p class="q-sub">We're looking for your real experience, not a polished answer.</p>
+  <textarea name="sam_q9" rows="4" placeholder="Your answer..."></textarea>
+</div>
+<h3 class="sec-hdr">Section 3 — Desirability & Fit</h3>
+<div class="question">
+  <p class="ql">Q10. "A dashboard where I can see agent quality trends, failure patterns, and before/after comparisons — without writing code — would change how I manage AI features."</p>
+  <div class="likert-wrap"><table class="likert"><tr><th>1<br><small>Strongly Disagree</small></th><th>2</th><th>3<br><small>Neutral</small></th><th>4</th><th>5<br><small>Strongly Agree</small></th></tr><tr><td><input type="radio" name="sam_q10" value="1"></td><td><input type="radio" name="sam_q10" value="2"></td><td><input type="radio" name="sam_q10" value="3"></td><td><input type="radio" name="sam_q10" value="4"></td><td><input type="radio" name="sam_q10" value="5"></td></tr></table></div>
+</div>
+<div class="question">
+  <p class="ql">Q11. "Being able to flag bad agent conversations and create eval datasets myself — without asking engineering — would be valuable."</p>
+  <div class="likert-wrap"><table class="likert"><tr><th>1<br><small>Not useful</small></th><th>2</th><th>3<br><small>Neutral</small></th><th>4</th><th>5<br><small>Game-changing</small></th></tr><tr><td><input type="radio" name="sam_q11" value="1"></td><td><input type="radio" name="sam_q11" value="2"></td><td><input type="radio" name="sam_q11" value="3"></td><td><input type="radio" name="sam_q11" value="4"></td><td><input type="radio" name="sam_q11" value="5"></td></tr></table></div>
+</div>
+<div class="question">
+  <p class="ql">Q12. If you could see, right now, the top 10 conversations where your agent failed to accomplish the user's goal last week — what would you do with that?</p><p class="q-sub">What decisions would it unlock for you?</p>
+  <textarea name="sam_q12" rows="4" placeholder="Your answer..."></textarea>
+</div>
+<div class="question">
+  <p class="ql">Q13. What would make you bring a new AI quality / observability tool to your engineering team?</p>
+  <div class="opts">
+        <label class="opt"><input type="checkbox" name="sam_q13" value="It saves me time getting quality answers"><span>It saves me time getting quality answers</span></label>
+        <label class="opt"><input type="checkbox" name="sam_q13" value="It helps me make faster shipping decisions"><span>It helps me make faster shipping decisions</span></label>
+        <label class="opt"><input type="checkbox" name="sam_q13" value="It gives me evidence to push back or accelerate a release"><span>It gives me evidence to push back or accelerate a release</span></label>
+        <label class="opt"><input type="checkbox" name="sam_q13" value="It reduces the back-and-forth with engineering on quality questions"><span>It reduces the back-and-forth with engineering on quality questions</span></label>
+        <label class="opt"><input type="checkbox" name="sam_q13" value="Engineering recommends it to me"><span>Engineering recommends it to me</span></label>
+  </div>
+</div>
+<h3 class="sec-hdr">Section 4 — Influence & Budget</h3>
+<div class="question">
+  <p class="ql">Q14. How much influence do you have on tool purchasing decisions for your team?</p>
+  <div class="opts">
+        <label class="opt"><input type="radio" name="sam_q14" value="I can expense tools up to ~$200/month without approval"><span>I can expense tools up to ~$200/month without approval</span></label>
+        <label class="opt"><input type="radio" name="sam_q14" value="I influence but don't own the budget — engineering decides"><span>I influence but don't own the budget — engineering decides</span></label>
+        <label class="opt"><input type="radio" name="sam_q14" value="I influence but don't own the budget — platform / infra team decides"><span>I influence but don't own the budget — platform / infra team decides</span></label>
+        <label class="opt"><input type="radio" name="sam_q14" value="Joint decision with engineering and finance"><span>Joint decision with engineering and finance</span></label>
+  </div>
+</div>
+<div class="question">
+  <p class="ql">Q15. If a tool saved you 3–5 hours/week of back-and-forth with engineering on quality questions, what's a fair price?</p>
+  <div class="opts">
+        <label class="opt"><input type="radio" name="sam_q15" value="Free only"><span>Free only</span></label>
+        <label class="opt"><input type="radio" name="sam_q15" value="$0–$100/month"><span>$0–$100/month</span></label>
+        <label class="opt"><input type="radio" name="sam_q15" value="$100–$300/month"><span>$100–$300/month</span></label>
+        <label class="opt"><input type="radio" name="sam_q15" value="$300–$800/month"><span>$300–$800/month</span></label>
+        <label class="opt"><input type="radio" name="sam_q15" value="My company would pay > $1K/month for this"><span>My company would pay > $1K/month for this</span></label>
+  </div>
+</div>
+<h3 class="sec-hdr">Section 5 — Anything Else</h3>
+<div class="question">
+  <p class="ql">Q16. Is there a tool or approach you've seen (at another company, a conference, online) that gets closest to what you'd actually want? What does it do well or poorly?</p>
+  <textarea name="sam_q16" rows="4" placeholder="Your answer..."></textarea>
+</div>
+<div class="question">
+  <p class="ql">Q17. Would you be open to a 20-minute follow-up conversation? If yes, please leave your name / email / LinkedIn below.</p><p class="q-sub">Completely optional — we'll share a summary of findings with all participants.</p>
+  <textarea name="sam_q17" rows="4" placeholder="Your answer..."></textarea>
+</div>
+</div>
+
+    <div id="submit-bar" class="submit-bar" hidden>
+      <button type="submit" class="btn-submit" id="btn-submit">Submit Survey &rarr;</button>
+    </div>
+
+  </form>
+
+  <div id="thankyou" class="thankyou" hidden>
+    <div class="check">&#10003;</div>
+    <h2>Thank you!</h2>
+    <p>Your response has been recorded. This research stays anonymous — your name won't be attached to any findings.</p>
+    <p>Amit will share a summary of what he learns with everyone who participated.</p>
+    <p class="note">If you'd like to follow up directly: amitgar@hotmail.com</p>
+  </div>
+
+</div>
+<script>
+const WEBHOOK = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
+
+// Persona card click handler
+document.querySelectorAll('.persona-card').forEach(card => {
+  card.addEventListener('click', () => {
+    const radio = card.querySelector('input[type="radio"]');
+    radio.checked = true;
+    document.querySelectorAll('.persona-card').forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    document.querySelectorAll('.persona-sec').forEach(s => s.hidden = true);
+    document.getElementById('sec-' + radio.value).hidden = false;
+    document.getElementById('submit-bar').hidden = false;
+    document.getElementById('err-msg').style.display = 'none';
+    setTimeout(() => {
+      document.getElementById('sec-' + radio.value).scrollIntoView({behavior: 'smooth', block: 'start'});
+    }, 80);
+  });
+});
+
+// Form submission
+document.getElementById('survey').addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  const personaInput = document.querySelector('input[name="persona"]:checked');
+  if (!personaInput) {
+    const err = document.getElementById('err-msg');
+    err.style.display = 'block';
+    err.scrollIntoView({behavior: 'smooth', block: 'center'});
+    return;
+  }
+
+  if (WEBHOOK === 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+    alert('Survey is not yet configured. Please contact the survey owner.');
+    return;
+  }
+
+  const persona = personaInput.value;
+  const data = { persona, submitted_at: new Date().toISOString() };
+
+  const sec = document.getElementById('sec-' + persona);
+  sec.querySelectorAll('input, textarea').forEach(el => {
+    if (!el.name) return;
+    if (el.type === 'checkbox') {
+      if (el.checked) {
+        if (!data[el.name]) data[el.name] = [];
+        data[el.name].push(el.value);
+      }
+    } else if (el.type === 'radio') {
+      if (el.checked) data[el.name] = el.value;
+    } else {
+      if (el.value.trim()) data[el.name] = el.value.trim();
+    }
+  });
+
+  // Flatten arrays to pipe-separated strings for Google Sheets
+  Object.keys(data).forEach(k => {
+    if (Array.isArray(data[k])) data[k] = data[k].join(' | ');
+  });
+
+  const btn = document.getElementById('btn-submit');
+  btn.textContent = 'Submitting...';
+  btn.disabled = true;
+
+  fetch(WEBHOOK, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  }).finally(() => {
+    document.getElementById('survey').hidden = true;
+    document.getElementById('thankyou').hidden = false;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+</script>
+</body>
+</html>
