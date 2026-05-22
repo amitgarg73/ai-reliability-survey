@@ -625,7 +625,7 @@ textarea:focus { outline: none; border-color: #0f3d5f; background: #fff; box-sha
 
 </div>
 <script>
-const WEBHOOK = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
+const WEBHOOK = "https://script.google.com/macros/s/AKfycbxfswZVfpfdtozEWThouv994IotyZktVhuJ-C27i-z3CnoFw00yBUyiNj3gNMCFQkcy/exec";
 
 // Persona card click handler
 document.querySelectorAll('.persona-card').forEach(card => {
@@ -656,7 +656,7 @@ document.getElementById('survey').addEventListener('submit', function(e) {
     return;
   }
 
-  if (WEBHOOK === 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+  if (WEBHOOK === 'NOT_CONFIGURED') {
     alert('Survey is not yet configured. Please contact the survey owner.');
     return;
   }
